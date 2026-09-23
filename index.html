@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Amo Vocês ❤️</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#07152d,#102b52);color:#fff;min-height:100vh;overflow:hidden}
+.wrap{min-height:100vh;display:grid;place-items:center;padding:24px;position:relative}
+.card{width:min(680px,100%);text-align:center;padding:48px 28px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);backdrop-filter:blur(14px);border-radius:28px;box-shadow:0 20px 70px rgba(0,0,0,.3);position:relative;z-index:2}
+.heart{font-size:72px;animation:pulse 1.5s infinite}.title{font-size:clamp(42px,10vw,78px);margin:10px 0;font-weight:800;letter-spacing:-3px}.msg{font-size:20px;line-height:1.6;color:#e9f1ff;white-space:pre-wrap}.from{margin-top:26px;font-weight:700;font-size:18px}
+button,input,textarea{font:inherit}.btn{border:0;border-radius:14px;padding:14px 20px;background:#fff;color:#102b52;font-weight:800;cursor:pointer;margin-top:22px}.editor{display:none}.editor.show{display:block}.editor h1{margin-top:0}.field{text-align:left;margin:14px 0}.field label{display:block;margin-bottom:7px;font-weight:700}.field input,.field textarea{width:100%;padding:13px;border:0;border-radius:12px;background:rgba(255,255,255,.95);color:#102b52}.field textarea{min-height:110px;resize:vertical}.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.copy{background:#7dd3fc}.share{background:#86efac}
+.heart-float{position:absolute;bottom:-40px;animation:rise linear forwards;opacity:.75;font-size:24px}
+@keyframes pulse{50%{transform:scale(1.12)}}@keyframes rise{to{transform:translateY(-115vh) rotate(25deg);opacity:0}}
+.small{font-size:13px;color:#c8d8ef;margin-top:16px}.url{word-break:break-all;margin-top:15px;color:#bde7ff}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card" id="card">
+    <div id="view">
+      <div class="heart">❤️</div>
+      <h1 class="title" id="title">AMO VOCÊS</h1>
+      <div class="msg" id="message">Só queria deixar registrado o quanto vocês são importantes para mim.</div>
+      <div class="from" id="from">— Com carinho ❤️</div>
+      <button class="btn" id="shareBtn">Compartilhar ❤️</button>
+      <div class="small">Uma mensagem simples, feita com carinho.</div>
+    </div>
+
+    <div class="editor" id="editor">
+      <h1>Crie sua mensagem ❤️</h1>
+      <div class="field"><label>Mensagem</label><textarea id="msgInput">Só queria deixar registrado o quanto vocês são importantes para mim.</textarea></div>
+      <div class="field"><label>Assinatura</label><input id="fromInput" value="Thyago"></div>
+      <div class="actions"><button class="btn" id="generateBtn">Gerar link 🔗</button><button class="btn" id="closeBtn">Voltar</button></div>
+      <div class="url" id="url"></div>
+      <button class="btn copy" id="copyBtn" style="display:none">Copiar link</button>
+    </div>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const params=new URLSearchParams(location.search);
+if(params.has("m")) $("message").textContent=params.get("m");
+if(params.has("f")) $("from").textContent="— "+params.get("f")+" ❤️";
+
+function floatHeart(){
+ const h=document.createElement("div"); h.className="heart-float"; h.textContent=["❤️","💙","🤍","💕","✨"][Math.floor(Math.random()*5)];
+ h.style.left=Math.random()*100+"vw"; h.style.animationDuration=(5+Math.random()*6)+"s"; h.style.fontSize=(16+Math.random()*25)+"px";
+ document.querySelector(".wrap").appendChild(h); setTimeout(()=>h.remove(),12000);
+}
+setInterval(floatHeart,650);
+
+$("shareBtn").onclick=async()=>{
+ const text=`${$("title").textContent}\n\n${$("message").textContent}\n\n${$("from").textContent}`;
+ if(navigator.share){try{await navigator.share({title:"Uma mensagem para vocês ❤️",text,url:location.href})}catch(e){}}
+ else alert("Copie o endereço desta página e envie para seus amigos ❤️");
+};
+
+const openEditor=()=>{$("view").style.display="none";$("editor").classList.add("show")};
+const closeEditor=()=>{$("editor").classList.remove("show");$("view").style.display="block"};
+$("title").ondblclick=openEditor;
+$("closeBtn").onclick=closeEditor;
+
+$("generateBtn").onclick=()=>{
+ const m=$("msgInput").value.trim(), f=$("fromInput").value.trim();
+ const u=new URL(location.href); u.search=""; u.searchParams.set("m",m); if(f)u.searchParams.set("f",f);
+ $("url").textContent=u.href; $("copyBtn").style.display="inline-block";
+};
+$("copyBtn").onclick=async()=>{
+ try{await navigator.clipboard.writeText($("url").textContent);$("copyBtn").textContent="Copiado! ❤️";setTimeout(()=>$("copyBtn").textContent="Copiar link",1500)}
+ catch(e){prompt("Copie o link:",$("url").textContent)}
+};
+</script>
+</body>
+</html>
